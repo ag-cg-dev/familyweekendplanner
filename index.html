@@ -121,14 +121,6 @@
   }
   .task .time.notime { color: var(--muted); font-style: italic; font-weight: 400; font-size: 13px; }
   .task .text { flex: 1; font-size: 15px; line-height: 1.45; padding-top: 2px; cursor: pointer; }
-  .task .tag {
-    display: inline-block; font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    padding: 2px 6px; border-radius: 4px;
-    background: var(--accent-soft); color: var(--accent);
-    margin-left: 6px; vertical-align: middle;
-  }
-  .task .tag.locked { background: #EFE7DC; color: var(--muted); }
   .task.done .text { color: var(--muted); text-decoration: line-through; }
   .task.done .time { color: var(--muted); }
   .task.done .check { background: var(--done); border-color: var(--done); }
@@ -145,12 +137,52 @@
     position: relative; transition: all 0.15s ease; background: var(--card);
   }
   .check:hover { border-color: var(--ink); }
-  .delete-btn {
+  .delete-btn, .edit-btn {
     background: transparent; border: none; color: var(--muted);
-    cursor: pointer; padding: 4px; opacity: 0;
-    transition: opacity 0.15s ease; font-size: 14px; line-height: 1;
+    cursor: pointer; padding: 4px; opacity: 0.35;
+    transition: opacity 0.15s ease, color 0.15s ease;
+    font-size: 14px; line-height: 1;
   }
-  .delete-btn:hover { color: var(--accent); }
+  .delete-btn:hover { color: var(--accent); opacity: 1; }
+  .edit-btn:hover { color: var(--ink); opacity: 1; }
+  .task:hover .delete-btn, .task:hover .edit-btn,
+  .prep-task:hover .delete-btn, .prep-task:hover .edit-btn { opacity: 1; }
+  @media (hover: none) {
+    .delete-btn, .edit-btn { opacity: 0.55; }
+  }
+
+  /* Inline edit mode */
+  .task.editing, .prep-task.editing {
+    background: rgba(245, 240, 232, 0.6);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .task.editing input[type="time"], .prep-task.editing select {
+    border: 1px solid var(--line); background: var(--card);
+    border-radius: 8px; padding: 8px 10px;
+    font-family: inherit; font-size: 14px; color: var(--ink);
+  }
+  .task.editing input[type="time"] { width: 110px; }
+  .task.editing input[type="text"], .prep-task.editing input[type="text"] {
+    flex: 1; min-width: 140px;
+    border: 1px solid var(--line); background: var(--card);
+    border-radius: 8px; padding: 8px 12px;
+    font-family: inherit; font-size: 14px; color: var(--ink);
+  }
+  .task.editing input:focus, .prep-task.editing input:focus,
+  .prep-task.editing select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  .task.editing .save-btn, .prep-task.editing .save-btn {
+    background: var(--ink); color: var(--bg); border: none;
+    padding: 8px 14px; border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .task.editing .save-btn:hover, .prep-task.editing .save-btn:hover { background: var(--accent); }
+  .task.editing .cancel-btn, .prep-task.editing .cancel-btn {
+    background: transparent; color: var(--muted); border: 1px solid var(--line);
+    padding: 8px 14px; border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .task.editing .cancel-btn:hover, .prep-task.editing .cancel-btn:hover { color: var(--ink); border-color: var(--ink); }
   .add-task {
     padding: 16px 24px 20px;
     background: rgba(245, 240, 232, 0.5);
@@ -400,6 +432,7 @@
 
   let state = null;
   let activeTab = localStorage.getItem(LOCAL_TAB_KEY) || 'prep';
+  let editingId = null;
 
   async function hashString(str) {
     const buf = new TextEncoder().encode(str);
@@ -561,7 +594,7 @@
       const btn = document.createElement('button');
       btn.className = activeTab === d.key ? 'active' : '';
       btn.innerHTML = `${d.label}${remaining > 0 ? `<span class="num">${remaining}</span>` : ''}`;
-      btn.onclick = () => { activeTab = d.key; localStorage.setItem(LOCAL_TAB_KEY, activeTab); render(); };
+      btn.onclick = () => { activeTab = d.key; editingId = null; localStorage.setItem(LOCAL_TAB_KEY, activeTab); render(); };
       tabsEl.appendChild(btn);
     });
   }
@@ -589,11 +622,19 @@
           </button>
         </div>
         <div class="tasks">
-          ${sorted.map(t => `
+          ${sorted.map(t => t.id === editingId ? `
+            <div class="task editing">
+              <input type="time" id="editTime-${t.id}" value="${t.time || ''}" />
+              <input type="text" id="editText-${t.id}" value="${escapeHtml(t.text)}" />
+              <button class="save-btn" data-action="save" data-day="${dayKey}" data-id="${t.id}">Save</button>
+              <button class="cancel-btn" data-action="cancel">Cancel</button>
+            </div>
+          ` : `
             <div class="task ${t.done ? 'done' : ''}">
               <div class="check" data-action="toggle" data-day="${dayKey}" data-id="${t.id}"></div>
               <div class="time ${!t.time ? 'notime' : ''}">${t.time || 'anytime'}</div>
-              <div class="text" data-action="toggle" data-day="${dayKey}" data-id="${t.id}">${escapeHtml(t.text)}${t.locked ? '<span class="tag locked">Locked in</span>' : ''}</div>
+              <div class="text" data-action="toggle" data-day="${dayKey}" data-id="${t.id}">${escapeHtml(t.text)}</div>
+              <button class="edit-btn" data-action="edit" data-day="${dayKey}" data-id="${t.id}" title="Edit">\u270e</button>
               <button class="delete-btn" data-action="delete" data-day="${dayKey}" data-id="${t.id}" title="Delete">\u2715</button>
             </div>
           `).join('')}
@@ -631,13 +672,27 @@
       if (secTasks.length === 0) return;
       html += `<div class="prep-section-label">${escapeHtml(sec)}</div>`;
       secTasks.forEach(t => {
-        html += `
-          <div class="prep-task ${t.done ? 'done' : ''}">
-            <div class="check" data-action="toggle" data-day="prep" data-id="${t.id}"></div>
-            <div class="text" data-action="toggle" data-day="prep" data-id="${t.id}">${escapeHtml(t.text)}</div>
-            <button class="delete-btn" data-action="delete" data-day="prep" data-id="${t.id}" title="Delete">\u2715</button>
-          </div>
-        `;
+        if (t.id === editingId) {
+          html += `
+            <div class="prep-task editing">
+              <select id="editSection-${t.id}">
+                ${allSections.map(s => `<option value="${escapeHtml(s)}" ${s === t.section ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('')}
+              </select>
+              <input type="text" id="editText-${t.id}" value="${escapeHtml(t.text)}" />
+              <button class="save-btn" data-action="savePrep" data-id="${t.id}">Save</button>
+              <button class="cancel-btn" data-action="cancel">Cancel</button>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="prep-task ${t.done ? 'done' : ''}">
+              <div class="check" data-action="toggle" data-day="prep" data-id="${t.id}"></div>
+              <div class="text" data-action="toggle" data-day="prep" data-id="${t.id}">${escapeHtml(t.text)}</div>
+              <button class="edit-btn" data-action="edit" data-day="prep" data-id="${t.id}" title="Edit">\u270e</button>
+              <button class="delete-btn" data-action="delete" data-day="prep" data-id="${t.id}" title="Delete">\u2715</button>
+            </div>
+          `;
+        }
       });
     });
     html += `
@@ -700,14 +755,53 @@
       }];
       await writeState({ prep: updated });
       textEl.value = '';
+    } else if (action === 'edit') {
+      editingId = id;
+      render();
+      // Focus the text input after render
+      setTimeout(() => {
+        const el = document.getElementById(`editText-${id}`);
+        if (el) { el.focus(); el.select(); }
+      }, 0);
+    } else if (action === 'cancel') {
+      editingId = null;
+      render();
+    } else if (action === 'save') {
+      const timeEl = document.getElementById(`editTime-${id}`);
+      const textEl = document.getElementById(`editText-${id}`);
+      const text = textEl.value.trim();
+      if (!text) return;
+      const updated = state[dayKey].map(t => t.id === id ? { ...t, text, time: timeEl.value || '' } : t);
+      editingId = null;
+      await writeState({ [dayKey]: updated });
+    } else if (action === 'savePrep') {
+      const sectionEl = document.getElementById(`editSection-${id}`);
+      const textEl = document.getElementById(`editText-${id}`);
+      const text = textEl.value.trim();
+      if (!text) return;
+      const updated = state.prep.map(t => t.id === id ? { ...t, text, section: sectionEl.value } : t);
+      editingId = null;
+      await writeState({ prep: updated });
     } else if (action === 'download') {
       await downloadDay(dayKey);
     }
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
     const id = e.target.id || '';
+    if (e.key === 'Escape' && editingId) {
+      editingId = null;
+      render();
+      return;
+    }
+    if (e.key !== 'Enter') return;
+    if (id.startsWith('editText-')) {
+      // Save the edit
+      const taskId = id.replace('editText-', '');
+      const saveBtn = document.querySelector(`[data-id="${taskId}"][data-action="save"], [data-id="${taskId}"][data-action="savePrep"]`);
+      if (saveBtn) saveBtn.click();
+      return;
+    }
     if (id === 'addText-prep') {
       document.querySelector('[data-action="addPrep"]').click();
     } else if (id.startsWith('addText-')) {
@@ -748,7 +842,7 @@
         bodyHtml += `
           <div class="export-task ${t.done ? 'done' : ''}">
             <div class="etime ${!t.time ? 'notime' : ''}">${t.time || 'anytime'}</div>
-            <div class="etext">${escapeHtml(t.text)}${t.locked ? '<span class="etag">Locked in</span>' : ''}</div>
+            <div class="etext">${escapeHtml(t.text)}</div>
           </div>
         `;
       });
