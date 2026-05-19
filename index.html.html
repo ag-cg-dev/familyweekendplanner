@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Family Visit · 22–27 May</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg: #FAF5EC;
+    --card: #FFFFFF;
+    --ink: #1F1B16;
+    --muted: #7A6F62;
+    --line: #E5DDD0;
+    --accent: #B5573C;
+    --accent-soft: #F3DCD1;
+    --done: #5C6B3F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Manrope', -apple-system, sans-serif;
+    font-size: 16px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(181,87,60,0.04), transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(92,107,63,0.04), transparent 40%);
+  }
+  .app { max-width: 720px; margin: 0 auto; padding: 24px 20px 80px; }
+  header.masthead {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 20px; margin-bottom: 24px; position: relative;
+  }
+  .eyebrow {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px;
+  }
+  h1.title {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: clamp(28px, 5vw, 38px); line-height: 1.1; letter-spacing: -0.02em;
+  }
+  h1.title em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .sync-pill {
+    position: absolute; top: 0; right: 0;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--muted);
+    padding: 4px 10px; border: 1px solid var(--line);
+    border-radius: 999px; background: var(--card);
+  }
+  .sync-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .sync-pill.live .dot { background: var(--done); animation: pulse 2s infinite; }
+  .sync-pill.offline .dot { background: #C99846; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(92,107,63,0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(92,107,63,0); }
+    100% { box-shadow: 0 0 0 0 rgba(92,107,63,0); }
+  }
+  nav.tabs {
+    display: flex; gap: 4px; margin-bottom: 24px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px; scrollbar-width: none;
+  }
+  nav.tabs::-webkit-scrollbar { display: none; }
+  nav.tabs button {
+    flex-shrink: 0; background: transparent;
+    border: 1px solid var(--line); color: var(--ink);
+    padding: 10px 16px; border-radius: 999px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+  }
+  nav.tabs button .num { color: var(--muted); font-weight: 500; margin-left: 4px; }
+  nav.tabs button:hover { border-color: var(--ink); }
+  nav.tabs button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  nav.tabs button.active .num { color: rgba(250,245,236,0.6); }
+  .day-card, .prep-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; overflow: hidden;
+  }
+  .day-header, .prep-header {
+    padding: 24px 24px 20px; border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  }
+  .day-header-text .day-name {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+    font-size: 14px; color: var(--accent); margin-bottom: 4px;
+  }
+  .day-header-text .day-date {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 28px; line-height: 1.1; letter-spacing: -0.01em;
+  }
+  .day-header-text .day-meta { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .download-btn {
+    background: var(--accent); color: white; border: none;
+    padding: 10px 16px; border-radius: 999px;
+    font-family: inherit; font-size: 12px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s ease; flex-shrink: 0;
+  }
+  .download-btn:hover { background: #9c4632; }
+  .download-btn:disabled { opacity: 0.5; cursor: wait; }
+  .download-btn svg { width: 14px; height: 14px; }
+  .tasks { padding: 8px 0; }
+  .task {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 24px; border-bottom: 1px solid var(--line);
+    transition: background 0.15s ease;
+  }
+  .task:last-child { border-bottom: none; }
+  .task:hover { background: rgba(181,87,60,0.03); }
+  .task:hover .delete-btn { opacity: 1; }
+  .task .time {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 15px; min-width: 70px; color: var(--ink); padding-top: 2px;
+  }
+  .task .time.notime { color: var(--muted); font-style: italic; font-weight: 400; font-size: 13px; }
+  .task .text { flex: 1; font-size: 15px; line-height: 1.45; padding-top: 2px; cursor: pointer; }
+  .task .tag {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 2px 6px; border-radius: 4px;
+    background: var(--accent-soft); color: var(--accent);
+    margin-left: 6px; vertical-align: middle;
+  }
+  .task .tag.locked { background: #EFE7DC; color: var(--muted); }
+  .task.done .text { color: var(--muted); text-decoration: line-through; }
+  .task.done .time { color: var(--muted); }
+  .task.done .check { background: var(--done); border-color: var(--done); }
+  .task.done .check::after {
+    content: ''; position: absolute; left: 5px; top: 1px;
+    width: 5px; height: 10px;
+    border: solid white; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .check {
+    width: 20px; height: 20px;
+    border: 1.5px solid var(--line); border-radius: 50%;
+    flex-shrink: 0; margin-top: 2px; cursor: pointer;
+    position: relative; transition: all 0.15s ease; background: var(--card);
+  }
+  .check:hover { border-color: var(--ink); }
+  .delete-btn {
+    background: transparent; border: none; color: var(--muted);
+    cursor: pointer; padding: 4px; opacity: 0;
+    transition: opacity 0.15s ease; font-size: 14px; line-height: 1;
+  }
+  .delete-btn:hover { color: var(--accent); }
+  .add-task {
+    padding: 16px 24px 20px;
+    background: rgba(245, 240, 232, 0.5);
+    border-top: 1px solid var(--line);
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .add-task input[type="time"], .add-task select {
+    border: 1px solid var(--line); background: var(--card);
+    border-radius: 8px; padding: 9px 10px;
+    font-family: inherit; font-size: 14px; color: var(--ink);
+  }
+  .add-task input[type="time"] { width: 110px; }
+  .add-task input[type="text"] {
+    flex: 1; min-width: 140px;
+    border: 1px solid var(--line); background: var(--card);
+    border-radius: 8px; padding: 9px 12px;
+    font-family: inherit; font-size: 14px; color: var(--ink);
+  }
+  .add-task input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  .add-task button {
+    background: var(--ink); color: var(--bg); border: none;
+    padding: 9px 16px; border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .add-task button:hover { background: var(--accent); }
+  .prep-section-label {
+    padding: 18px 24px 8px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--muted);
+  }
+  .prep-task {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 12px 24px; border-bottom: 1px solid var(--line);
+  }
+  .prep-task:hover { background: rgba(181,87,60,0.03); }
+  .prep-task:hover .delete-btn { opacity: 1; }
+  .prep-task .text { flex: 1; font-size: 15px; padding-top: 1px; cursor: pointer; }
+  .prep-task.done .text { color: var(--muted); text-decoration: line-through; }
+  .footer-note {
+    text-align: center; color: var(--muted); font-size: 12px;
+    margin-top: 32px; font-family: 'Fraunces', serif; font-style: italic;
+  }
+  .footer-note a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+  .gate-overlay {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999; padding: 20px;
+  }
+  .gate-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 36px 32px;
+    max-width: 420px; width: 100%; text-align: center;
+  }
+  .gate-card .eyebrow { margin-bottom: 12px; }
+  .gate-card h2 {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 28px; line-height: 1.2; margin-bottom: 8px;
+  }
+  .gate-card h2 em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .gate-card p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .gate-card input {
+    width: 100%;
+    border: 1px solid var(--line); background: var(--bg);
+    border-radius: 10px; padding: 14px 16px;
+    font-family: inherit; font-size: 16px; color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .gate-card input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  .gate-card button {
+    width: 100%; background: var(--ink); color: var(--bg); border: none;
+    padding: 14px 16px; border-radius: 10px;
+    font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .gate-card button:hover { background: var(--accent); }
+  .gate-card .err { color: var(--accent); font-size: 13px; margin-bottom: 12px; min-height: 18px; }
+  .gate-card .hint { color: var(--muted); font-size: 12px; margin-top: 16px; }
+  .loading {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted); font-family: 'Fraunces', serif; font-style: italic;
+  }
+  .export-container {
+    position: fixed; left: -9999px; top: 0;
+    width: 1080px; background: var(--bg);
+    padding: 70px 60px; font-family: 'Manrope', sans-serif;
+  }
+  .export-container .export-eyebrow {
+    font-size: 18px; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px;
+  }
+  .export-container .export-title {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 92px; line-height: 1.0; letter-spacing: -0.02em; margin-bottom: 12px;
+  }
+  .export-container .export-title em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .export-container .export-meta {
+    color: var(--muted); font-size: 22px; margin-bottom: 56px;
+    border-bottom: 2px solid var(--line); padding-bottom: 28px;
+  }
+  .export-container .export-task {
+    display: flex; gap: 32px; padding: 22px 0;
+    border-bottom: 1px solid var(--line); align-items: flex-start;
+  }
+  .export-container .export-task .etime {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 30px; min-width: 150px; color: var(--ink);
+  }
+  .export-container .export-task .etime.notime {
+    color: var(--muted); font-style: italic; font-weight: 400; font-size: 24px;
+  }
+  .export-container .export-task .etext { flex: 1; font-size: 30px; line-height: 1.35; color: var(--ink); }
+  .export-container .export-task.done .etext { color: var(--muted); text-decoration: line-through; }
+  .export-container .export-task .etag {
+    display: inline-block; font-size: 16px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--accent-soft); color: var(--accent);
+    margin-left: 12px; vertical-align: middle;
+  }
+  .export-container .export-footer {
+    margin-top: 56px; font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 22px; color: var(--muted); text-align: center;
+  }
+  @media (max-width: 480px) {
+    .day-header, .prep-header { padding: 20px 18px 16px; flex-direction: column; }
+    .task { padding: 12px 18px; }
+    .task .time { min-width: 60px; font-size: 14px; }
+    .task .text { font-size: 14px; }
+    .add-task { padding: 14px 18px 18px; }
+    .prep-task { padding: 12px 18px; }
+    .prep-section-label { padding: 16px 18px 6px; }
+    .sync-pill { position: static; margin-bottom: 12px; align-self: flex-start; display: inline-flex; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-card" id="gateCard">
+    <div class="loading">Connecting…</div>
+  </div>
+</div>
+
+<div class="app" id="appRoot" style="display:none;">
+  <header class="masthead">
+    <div class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncLabel">Connecting…</span></div>
+    <div class="eyebrow">Weekend Plan</div>
+    <h1 class="title">Family <em>Visit</em></h1>
+    <div class="subtitle">Friday 22 — Wednesday 27 May · Rod, Heather, Oakley &amp; Cody</div>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main id="view"></main>
+  <div class="footer-note">Tap a task to mark done · Hover to delete · Live-synced · <a id="signOutLink">Sign out</a></div>
+</div>
+
+<div class="export-container" id="exportContainer"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDg9mb0c1AZTDjZzFsDBfeqv_5P10RgVgI",
+    authDomain: "family-visit-planner.firebaseapp.com",
+    projectId: "family-visit-planner",
+    storageBucket: "family-visit-planner.firebasestorage.app",
+    messagingSenderId: "553672934987",
+    appId: "1:553672934987:web:31ee8e78d695c1fd1e6fce",
+    measurementId: "G-WLZ5TV51XC"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const PLANNER_REF = doc(db, "planners", "family-visit-22may");
+  const LOCAL_PASS_KEY = "family-visit-pass-hash";
+  const LOCAL_TAB_KEY = "family-visit-active-tab";
+
+  const DAYS = [
+    { key: 'prep', label: 'Prep', name: 'Before They Arrive', date: 'This Week', meta: 'Get the house & yourself ready' },
+    { key: 'fri',  label: 'Fri',  name: 'Friday',   date: '22 May', meta: 'Oakley arrives \u00b7 Peden Street church' },
+    { key: 'sat',  label: 'Sat',  name: 'Saturday', date: '23 May', meta: 'Rod, Heather & Cody arrive \u00b7 Lilydale church' },
+    { key: 'sun',  label: 'Sun',  name: 'Sunday',   date: '24 May', meta: "Lord\u2019s Supper \u00b7 Melbourne \u00b7 Rick Simpson\u2019s" },
+    { key: 'mon',  label: 'Mon',  name: 'Monday',   date: '25 May', meta: 'Oakley flies home (6am)' },
+    { key: 'tue',  label: 'Tue',  name: 'Tuesday',  date: '26 May', meta: 'Guests at work' },
+    { key: 'wed',  label: 'Wed',  name: 'Wednesday',date: '27 May', meta: 'Rod, Heather & Cody fly home (last flight)' },
+  ];
+
+  const SEED = {
+    prep: [
+      { section: 'House',    text: 'Make beds in guest rooms', done: false },
+      { section: 'House',    text: 'Bath towels in bathrooms', done: false },
+      { section: 'House',    text: 'Hand towels & bathmats out', done: false },
+      { section: 'House',    text: 'Hand towels in bedrooms', done: false },
+      { section: 'House',    text: 'Pantry sorted & topped up', done: false },
+      { section: 'House',    text: 'Fridge clean-out', done: false },
+      { section: 'Food',     text: 'Plan & shop: Fri dinner', done: false },
+      { section: 'Food',     text: 'Plan & shop: Sat breakfast', done: false },
+      { section: 'Food',     text: 'Plan & shop: Sat lunch', done: false },
+      { section: 'Food',     text: 'Plan & shop: Sun evening', done: false },
+      { section: 'Food',     text: 'Make cookie dough & freeze', done: false },
+      { section: 'Food',     text: 'Drinks selection sourced', done: false },
+      { section: 'Food',     text: 'Snacks selection sourced', done: false },
+      { section: 'Food',     text: 'Croissants & Turkish bread to freezer (Mon/Tue/Wed brekkie)', done: false },
+      { section: 'Personal', text: 'Sort my clothes for the weekend', done: false },
+      { section: 'Personal', text: 'Small gift for Heather', done: false },
+      { section: 'Errands',  text: 'Drop Laurastar in for service', done: false },
+      { section: 'Errands',  text: 'Buy new iron', done: false },
+    ],
+    fri: [
+      { time: '16:15', text: 'Oakley lands \u00b7 catching uber to ours', locked: true, done: false },
+      { time: '17:00', text: 'Welcome Oakley \u00b7 settle in', done: false },
+      { time: '18:00', text: 'Church \u00b7 Peden Street', locked: true, done: false },
+      { time: '19:30', text: 'Friday dinner (TBC)', done: false },
+    ],
+    sat: [
+      { time: '07:00', text: 'Rod, Heather & Cody arrive', locked: true, done: false },
+      { time: '07:30', text: 'Breakfast (TBC)', done: false },
+      { time: '09:30', text: 'Everyone ready for church', done: false },
+      { time: '10:15', text: 'Leave for Lilydale', done: false },
+      { time: '11:30', text: 'Church \u00b7 Lilydale (Boronia attending)', locked: true, done: false },
+      { time: '13:00', text: 'Lunch (TBC)', done: false },
+      { time: '',      text: 'Scott & Emily Phillips (time TBC)', done: false },
+      { time: '19:00', text: 'Saturday dinner (TBC)', done: false },
+    ],
+    sun: [
+      { time: '05:47', text: "Leave for Lord\u2019s Supper", locked: true, done: false },
+      { time: '06:00', text: "Lord\u2019s Supper", locked: true, done: false },
+      { time: '09:00', text: 'Breakfast at home', locked: true, done: false },
+      { time: '10:30', text: 'Leave for Melbourne', locked: true, done: false },
+      { time: '11:30', text: "Lord\u2019s Day reading \u00b7 Melbourne", locked: true, done: false },
+      { time: '13:30', text: "Lunch at Rick Simpson\u2019s", locked: true, done: false },
+      { time: '',      text: 'Sunday evening (TBC)', done: false },
+    ],
+    mon: [
+      { time: '04:30', text: 'Oakley to airport (first flight)', done: false },
+      { time: '06:00', text: "Oakley\u2019s flight departs", locked: true, done: false },
+      { time: '07:00', text: 'Croissant/Turkish bread breakfast set out for Rod, Heather, Cody (take to work, toast there)', done: false },
+    ],
+    tue: [
+      { time: '07:00', text: 'Croissant/Turkish bread breakfast set out for guests', done: false },
+    ],
+    wed: [
+      { time: '07:00', text: 'Croissant/Turkish bread breakfast set out for guests', done: false },
+      { time: '',      text: 'Rod, Heather & Cody depart (last flight from Melbourne)', locked: true, done: false },
+    ],
+  };
+
+  let state = null;
+  let activeTab = localStorage.getItem(LOCAL_TAB_KEY) || 'prep';
+
+  async function hashString(str) {
+    const buf = new TextEncoder().encode(str);
+    const h = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function seedState() {
+    const seeded = {};
+    DAYS.forEach(d => {
+      seeded[d.key] = SEED[d.key].map((t, i) => ({ id: `${d.key}-${Date.now()}-${i}-${Math.random().toString(36).slice(2,7)}`, ...t }));
+    });
+    return seeded;
+  }
+
+  async function bootGate() {
+    let snapshot;
+    try {
+      snapshot = await getDoc(PLANNER_REF);
+    } catch (e) {
+      document.getElementById('gateCard').innerHTML = `<div class="eyebrow">Error</div>
+        <h2>Could not <em>connect</em></h2>
+        <p>${escapeHtml(e.message)}</p>
+        <p>Check Firestore is enabled and your security rules allow read/write.</p>`;
+      return;
+    }
+    const existing = snapshot.exists() ? snapshot.data() : null;
+    const localHash = localStorage.getItem(LOCAL_PASS_KEY);
+    if (existing && existing.authHash && localHash === existing.authHash) {
+      enterApp(); return;
+    }
+    if (existing && existing.authHash) {
+      renderEnterPassphrase(existing.authHash);
+    } else {
+      renderSetPassphrase();
+    }
+  }
+
+  function renderSetPassphrase() {
+    document.getElementById('gateCard').innerHTML = `
+      <div class="eyebrow">First Setup</div>
+      <h2>Set a <em>passphrase</em></h2>
+      <p>One-time setup. Pick a passphrase, then share it with Jason so he can open the same planner.</p>
+      <div class="err" id="gateErr"></div>
+      <input type="password" id="gatePass" placeholder="Choose a passphrase…" autocomplete="new-password" />
+      <input type="password" id="gatePass2" placeholder="Confirm passphrase" autocomplete="new-password" />
+      <button id="gateBtn">Create planner</button>
+      <div class="hint">Stored hashed. Anyone with this passphrase can view & edit.</div>
+    `;
+    const btn = document.getElementById('gateBtn');
+    const err = document.getElementById('gateErr');
+    const handle = async () => {
+      const p1 = document.getElementById('gatePass').value;
+      const p2 = document.getElementById('gatePass2').value;
+      if (!p1 || p1.length < 4) { err.textContent = 'Use at least 4 characters.'; return; }
+      if (p1 !== p2) { err.textContent = "Passphrases don't match."; return; }
+      btn.disabled = true; btn.textContent = 'Creating…';
+      try {
+        const hash = await hashString(p1);
+        const initial = { authHash: hash, ...seedState(), createdAt: Date.now() };
+        await setDoc(PLANNER_REF, initial);
+        localStorage.setItem(LOCAL_PASS_KEY, hash);
+        enterApp();
+      } catch (e) {
+        err.textContent = 'Error: ' + e.message;
+        btn.disabled = false; btn.textContent = 'Create planner';
+      }
+    };
+    btn.onclick = handle;
+    document.getElementById('gatePass2').addEventListener('keydown', e => { if (e.key === 'Enter') handle(); });
+  }
+
+  function renderEnterPassphrase(storedHash) {
+    document.getElementById('gateCard').innerHTML = `
+      <div class="eyebrow">Welcome</div>
+      <h2>Enter <em>passphrase</em></h2>
+      <p>Type the passphrase Consie set up.</p>
+      <div class="err" id="gateErr"></div>
+      <input type="password" id="gatePass" placeholder="Passphrase" autocomplete="current-password" />
+      <button id="gateBtn">Open planner</button>
+      <div class="hint">Saved on this device after first entry.</div>
+    `;
+    const btn = document.getElementById('gateBtn');
+    const err = document.getElementById('gateErr');
+    const input = document.getElementById('gatePass');
+    input.focus();
+    const handle = async () => {
+      const p = input.value;
+      if (!p) return;
+      btn.disabled = true; btn.textContent = 'Checking…';
+      const hash = await hashString(p);
+      if (hash === storedHash) {
+        localStorage.setItem(LOCAL_PASS_KEY, hash);
+        enterApp();
+      } else {
+        err.textContent = "That's not it. Try again.";
+        btn.disabled = false; btn.textContent = 'Open planner';
+        input.select();
+      }
+    };
+    btn.onclick = handle;
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') handle(); });
+  }
+
+  function enterApp() {
+    document.getElementById('gateOverlay').style.display = 'none';
+    document.getElementById('appRoot').style.display = 'block';
+    subscribe();
+  }
+
+  function signOut() {
+    localStorage.removeItem(LOCAL_PASS_KEY);
+    location.reload();
+  }
+
+  function subscribe() {
+    setSyncStatus('connecting', 'Connecting…');
+    onSnapshot(PLANNER_REF, (snap) => {
+      if (!snap.exists()) { setSyncStatus('offline', 'No data'); return; }
+      const data = snap.data();
+      const next = {};
+      DAYS.forEach(d => { next[d.key] = Array.isArray(data[d.key]) ? data[d.key] : []; });
+      state = next;
+      setSyncStatus(snap.metadata.fromCache ? 'offline' : 'live',
+                    snap.metadata.fromCache ? 'Offline · will sync' : 'Live · synced');
+      render();
+    }, (err) => {
+      setSyncStatus('offline', 'Connection lost');
+      console.error(err);
+    });
+  }
+
+  function setSyncStatus(cls, label) {
+    const pill = document.getElementById('syncPill');
+    pill.classList.remove('live', 'offline', 'connecting');
+    pill.classList.add(cls);
+    document.getElementById('syncLabel').textContent = label;
+  }
+
+  async function writeState(partial) {
+    try {
+      await setDoc(PLANNER_REF, partial, { merge: true });
+    } catch (e) {
+      console.error('Write failed', e);
+      setSyncStatus('offline', 'Save failed');
+    }
+  }
+
+  function renderTabs() {
+    const tabsEl = document.getElementById('tabs');
+    tabsEl.innerHTML = '';
+    DAYS.forEach(d => {
+      const tasks = state[d.key] || [];
+      const remaining = tasks.filter(t => !t.done).length;
+      const btn = document.createElement('button');
+      btn.className = activeTab === d.key ? 'active' : '';
+      btn.innerHTML = `${d.label}${remaining > 0 ? `<span class="num">${remaining}</span>` : ''}`;
+      btn.onclick = () => { activeTab = d.key; localStorage.setItem(LOCAL_TAB_KEY, activeTab); render(); };
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  function renderDay(dayKey) {
+    const day = DAYS.find(d => d.key === dayKey);
+    const tasks = state[dayKey] || [];
+    const sorted = [...tasks].sort((a, b) => {
+      if (!a.time && !b.time) return 0;
+      if (!a.time) return 1;
+      if (!b.time) return -1;
+      return a.time.localeCompare(b.time);
+    });
+    return `
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-header-text">
+            <div class="day-name">${day.name}</div>
+            <div class="day-date">${day.date}</div>
+            <div class="day-meta">${day.meta}</div>
+          </div>
+          <button class="download-btn" data-action="download" data-day="${dayKey}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Save for WhatsApp
+          </button>
+        </div>
+        <div class="tasks">
+          ${sorted.map(t => `
+            <div class="task ${t.done ? 'done' : ''}">
+              <div class="check" data-action="toggle" data-day="${dayKey}" data-id="${t.id}"></div>
+              <div class="time ${!t.time ? 'notime' : ''}">${t.time || 'anytime'}</div>
+              <div class="text" data-action="toggle" data-day="${dayKey}" data-id="${t.id}">${escapeHtml(t.text)}${t.locked ? '<span class="tag locked">Locked in</span>' : ''}</div>
+              <button class="delete-btn" data-action="delete" data-day="${dayKey}" data-id="${t.id}" title="Delete">\u2715</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="add-task">
+          <input type="time" id="addTime-${dayKey}" />
+          <input type="text" id="addText-${dayKey}" placeholder="Add a task or event…" />
+          <button data-action="add" data-day="${dayKey}">Add</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPrep() {
+    const tasks = state.prep || [];
+    const sections = ['House', 'Food', 'Personal', 'Errands'];
+    const customSections = [...new Set(tasks.map(t => t.section).filter(s => s && !sections.includes(s)))];
+    const allSections = [...sections, ...customSections];
+    let html = `
+      <div class="prep-card">
+        <div class="prep-header">
+          <div class="day-header-text">
+            <div class="day-name">Before They Arrive</div>
+            <div class="day-date">Prep List</div>
+            <div class="day-meta">Get the house & yourself ready</div>
+          </div>
+          <button class="download-btn" data-action="download" data-day="prep">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Save for WhatsApp
+          </button>
+        </div>
+    `;
+    allSections.forEach(sec => {
+      const secTasks = tasks.filter(t => t.section === sec);
+      if (secTasks.length === 0) return;
+      html += `<div class="prep-section-label">${escapeHtml(sec)}</div>`;
+      secTasks.forEach(t => {
+        html += `
+          <div class="prep-task ${t.done ? 'done' : ''}">
+            <div class="check" data-action="toggle" data-day="prep" data-id="${t.id}"></div>
+            <div class="text" data-action="toggle" data-day="prep" data-id="${t.id}">${escapeHtml(t.text)}</div>
+            <button class="delete-btn" data-action="delete" data-day="prep" data-id="${t.id}" title="Delete">\u2715</button>
+          </div>
+        `;
+      });
+    });
+    html += `
+      <div class="add-task">
+        <select id="addSection-prep">
+          ${allSections.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('')}
+          <option value="__new__">+ New section…</option>
+        </select>
+        <input type="text" id="addText-prep" placeholder="Add a job…" />
+        <button data-action="addPrep">Add</button>
+      </div>
+    </div>`;
+    return html;
+  }
+
+  function render() {
+    if (!state) return;
+    renderTabs();
+    const viewEl = document.getElementById('view');
+    viewEl.innerHTML = activeTab === 'prep' ? renderPrep() : renderDay(activeTab);
+  }
+
+  document.addEventListener('click', async (e) => {
+    const target = e.target.closest('[data-action]');
+    if (!target) return;
+    const action = target.dataset.action;
+    const dayKey = target.dataset.day;
+    const id = target.dataset.id;
+
+    if (action === 'toggle') {
+      const updated = state[dayKey].map(t => t.id === id ? { ...t, done: !t.done } : t);
+      await writeState({ [dayKey]: updated });
+    } else if (action === 'delete') {
+      const updated = state[dayKey].filter(t => t.id !== id);
+      await writeState({ [dayKey]: updated });
+    } else if (action === 'add') {
+      const timeEl = document.getElementById(`addTime-${dayKey}`);
+      const textEl = document.getElementById(`addText-${dayKey}`);
+      const text = textEl.value.trim();
+      if (!text) return;
+      const updated = [...state[dayKey], {
+        id: `${dayKey}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+        time: timeEl.value || '', text, done: false,
+      }];
+      await writeState({ [dayKey]: updated });
+      textEl.value = ''; timeEl.value = '';
+    } else if (action === 'addPrep') {
+      const sectionEl = document.getElementById('addSection-prep');
+      const textEl = document.getElementById('addText-prep');
+      let section = sectionEl.value;
+      if (section === '__new__') {
+        section = prompt('New section name?');
+        if (!section) return;
+      }
+      const text = textEl.value.trim();
+      if (!text) return;
+      const updated = [...state.prep, {
+        id: `prep-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+        section, text, done: false
+      }];
+      await writeState({ prep: updated });
+      textEl.value = '';
+    } else if (action === 'download') {
+      await downloadDay(dayKey);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const id = e.target.id || '';
+    if (id === 'addText-prep') {
+      document.querySelector('[data-action="addPrep"]').click();
+    } else if (id.startsWith('addText-')) {
+      const dayKey = id.replace('addText-', '');
+      const btn = document.querySelector(`[data-action="add"][data-day="${dayKey}"]`);
+      if (btn) btn.click();
+    }
+  });
+
+  document.getElementById('signOutLink').addEventListener('click', signOut);
+
+  async function downloadDay(dayKey) {
+    const day = DAYS.find(d => d.key === dayKey);
+    const tasks = state[dayKey] || [];
+    const container = document.getElementById('exportContainer');
+
+    let bodyHtml = '';
+    if (dayKey === 'prep') {
+      const sections = ['House', 'Food', 'Personal', 'Errands'];
+      const customSections = [...new Set(tasks.map(t => t.section).filter(s => s && !sections.includes(s)))];
+      const allSections = [...sections, ...customSections];
+      allSections.forEach(sec => {
+        const secTasks = tasks.filter(t => t.section === sec);
+        if (secTasks.length === 0) return;
+        bodyHtml += `<div style="font-size:20px; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; color:#7A6F62; margin-top:36px; margin-bottom:8px;">${escapeHtml(sec)}</div>`;
+        secTasks.forEach(t => {
+          bodyHtml += `<div class="export-task ${t.done ? 'done' : ''}"><div class="etext">${escapeHtml(t.text)}</div></div>`;
+        });
+      });
+    } else {
+      const sorted = [...tasks].sort((a, b) => {
+        if (!a.time && !b.time) return 0;
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+        return a.time.localeCompare(b.time);
+      });
+      sorted.forEach(t => {
+        bodyHtml += `
+          <div class="export-task ${t.done ? 'done' : ''}">
+            <div class="etime ${!t.time ? 'notime' : ''}">${t.time || 'anytime'}</div>
+            <div class="etext">${escapeHtml(t.text)}${t.locked ? '<span class="etag">Locked in</span>' : ''}</div>
+          </div>
+        `;
+      });
+    }
+
+    container.innerHTML = `
+      <div class="export-eyebrow">${dayKey === 'prep' ? 'To Do This Week' : 'Family Visit'}</div>
+      <div class="export-title">${dayKey === 'prep' ? 'Prep <em>List</em>' : day.name}</div>
+      <div class="export-meta">${day.date}${day.meta ? ' \u00b7 ' + day.meta : ''}</div>
+      ${bodyHtml}
+      <div class="export-footer">— Made with love at home —</div>
+    `;
+
+    const btns = document.querySelectorAll('.download-btn');
+    btns.forEach(b => { b.disabled = true; });
+    await new Promise(r => setTimeout(r, 200));
+
+    try {
+      const canvas = await html2canvas(container, { backgroundColor: '#FAF5EC', scale: 1, useCORS: true, logging: false });
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `family-visit-${dayKey}-${day.date.replace(/\s/g, '')}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    } catch (e) {
+      alert('Could not render image: ' + e.message);
+    } finally {
+      btns.forEach(b => { b.disabled = false; });
+    }
+  }
+
+  bootGate();
+</script>
+</body>
+</html>
